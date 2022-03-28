@@ -1,0 +1,8 @@
+{
+  "Config": {
+    "DatabaseSettings" : {
+      "ConnectionString" : "",
+      "DbType": "SqLite"
+    }
+  }
+}
