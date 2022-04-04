@@ -1,3 +1,5 @@
+using SearchBot.Configuration.Args;
+using SearchBot.Lib.Config;
 using SearchBot.Lib.Logging;
 using SearchBot.Lib.Scanners.SiteScanner;
 using SearchBot.Lib.Threading;
@@ -17,33 +19,27 @@ public class SiteUpdater : IJob
     private Task workingTask;
     private CancellationTokenSource cts = new();
     private SiteScanner siteScanner = new();
-    private StringArgsProvider _stringArgsProvider = new();
+    private SiteParserConfiguration _siteParserConfiguration;
 
-    private async Task Work(ArgsContainer<string> urlsContainer, ILog log)
+    public SiteUpdater(SiteParserConfiguration siteParserConfiguration)
     {
-        var urls = urlsContainer.Arguments.Select(arg => arg.Value);
-        var isGood = await TaskHelper.WaitFor(
-            () => ScanUrl(urls.First(), log),
-            TimeSpan.FromSeconds(10),
-            log
-        );
-        Task.WaitAll(
-            urls.Select(url => TaskHelper.WaitFor(() => ScanUrl(url, log), TimeSpan.FromSeconds(10), log)).ToArray()
-            );
-        log.Info($"Is scan success: {isGood}");
+        _siteParserConfiguration = siteParserConfiguration;
     }
 
-    private bool ScanUrl(string url, ILog log)
+    private async Task Work(ArgsContainer<ConfigFile> urlsContainer, ILog log)
+    {
+        var configFiles = urlsContainer.Arguments.Select(arg => arg.Value).First();
+        Task.WaitAll(
+            configFiles.Nodes.Select(node => TaskHelper.WaitFor(() => ScanUrl(node, log), TimeSpan.FromSeconds(10), log)).ToArray()
+            );
+        log.Info($"Is scan success: {true}");
+    }
+
+    private bool ScanUrl(Node node, ILog log)
     {
         var id = Guid.NewGuid();
-        log.Info($"Scanning for {url}, scan id = {id}");
-        var res = siteScanner.Scan(url, new ArgsContainer<string>
-        {
-            Arguments = new List<Argument<string>>
-            {
-                new() {Value = "Please read"}
-            }
-        });
+        log.Info($"Scanning for {node.Href}, scan id = {id}");
+        var res = siteScanner.Scan(node, null);
 
         foreach (var pair in res)
         {
@@ -54,12 +50,12 @@ public class SiteUpdater : IJob
         return true;
     }
     
-    public bool Run(ILog log)
+    public async Task<bool> Run(ILog log)
     {
         if (workingTask is { IsCompleted: false })
             throw new Exception("Job is already running");
         
-        workingTask = Task.Run(() => Work(_stringArgsProvider.GetArgs(), log), cts.Token);
+        workingTask = Task.Run(async () => Work(await _siteParserConfiguration.GetArgs(), log), cts.Token);
         Status = JobStatus.Running;
         return true;
     }

@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SearchBot.Configuration\SearchBot.Configuration.csproj" />
       <ProjectReference Include="..\SearchBot.Lib\SearchBot.Lib.csproj" />
     </ItemGroup>
 </Project>

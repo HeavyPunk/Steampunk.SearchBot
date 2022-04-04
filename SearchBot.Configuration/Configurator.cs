@@ -1,22 +1,21 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using SearchBot.Configuration.Models;
 using SearchBot.Configuration.Settings;
+using SearchBot.Lib.Logging;
 
 namespace SearchBot.Configuration;
 
-public class Configurator
+public class Configurator : IAppConfigurator
 {
     private readonly ConfiguratorSettings _settings;
     private DateTime lastUpdate = DateTime.MinValue;
     private Config cache = new();
-    private ILogger<Configurator> logger;
+    private ILog log;
 
-    public Configurator(ConfiguratorSettings settings, ILogger<Configurator> logger)
+    public Configurator(ConfiguratorSettings settings, ILog logger)
     {
         _settings = settings;
-        this.logger = logger;
+        log = logger;
     }
 
     public async Task<Config> GetConfig()
@@ -32,15 +31,12 @@ public class Configurator
     {
         if (!File.Exists(_settings.ConfigPath))
         {
-            logger.LogError($"Configurator cannot find file {_settings.ConfigPath}");
+            log.Error($"Configurator cannot find file {_settings.ConfigPath}");
             return cache;
         }
         using (var stream = File.Open(_settings.ConfigPath, FileMode.Open))
         {
-            var config = JsonSerializer.Deserialize<Config>(stream, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
+            var config = JsonSerializer.Deserialize<Config>(stream);
             cache = config;
         }
 

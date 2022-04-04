@@ -30,7 +30,7 @@ public class JobContainer : IJobContainer
                 var canGetJob = container.TryGetValue(id, out var job);
                 if (DateTime.Now - lastUpdate > respawn && canGetJob && job.Status == JobStatus.Stopped)
                 {
-                    job.Run(log);
+                    await job.Run(log);
                     respawnContainer.TryUpdate(id, (DateTime.Now, respawn), (lastUpdate, respawn));
                 }
             }
@@ -43,7 +43,7 @@ public class JobContainer : IJobContainer
     {
         var id = Guid.NewGuid();
         container.TryAdd(id, job);
-        respawnContainer.TryAdd(id, (DateTime.Now, respawn));
+        respawnContainer.TryAdd(id, (DateTime.MinValue, respawn));
         return id;
     }
 

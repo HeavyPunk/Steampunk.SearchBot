@@ -1,3 +1,6 @@
+using SearchBot.Configuration;
+using SearchBot.Configuration.Args;
+using SearchBot.Configuration.Settings;
 using SearchBot.Lib.Logging;
 using SearchBot.Worker;
 using SearchBot.Worker.Jobs;
@@ -8,6 +11,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<Worker>();
         services.AddSingleton<ILog, ConsoleLog>();
         services.AddSingleton<IJobContainer, JobContainer>();
+        services.AddSingleton<IAppConfigurator, Configurator>();
+        services.AddSingleton<SiteParserConfiguration>();
+        services.AddSingleton<ConfiguratorSettings>();
     })
     .Build();
 

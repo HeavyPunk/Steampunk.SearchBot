@@ -1,8 +1,7 @@
 {
-  "Config": {
-    "DatabaseSettings" : {
-      "ConnectionString" : "",
-      "DbType": "SqLite"
-    }
-  }
+  "DatabaseSettings" : {
+    "ConnectionString" : "",
+    "DbType": "SqLite"
+  },
+  "ResourceFilePath" : "/home/blackpoint/RiderProjects/Steampunk.SearchBot/commonconfig.json"
 }
