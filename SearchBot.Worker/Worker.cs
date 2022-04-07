@@ -1,4 +1,5 @@
 using SearchBot.Configuration.Args;
+using SearchBot.Lib.Appenders;
 using SearchBot.Lib.Logging;
 using SearchBot.Worker.Jobs;
 using SearchBot.Worker.Jobs.FromUrlUpdater;
@@ -10,17 +11,24 @@ public class Worker : BackgroundService
     private readonly ILog log;
     private SiteParserConfiguration _siteParserConfiguration;
     private readonly IJobContainer jobContainer;
+    private readonly IAppender _appender;
 
-    public Worker(ILog logger, IJobContainer jobContainer, SiteParserConfiguration siteParserConfiguration)
+    public Worker(
+        ILog logger,
+        IJobContainer jobContainer,
+        SiteParserConfiguration siteParserConfiguration,
+        IAppender appender
+        )
     {
         log = logger;
         this.jobContainer = jobContainer;
         _siteParserConfiguration = siteParserConfiguration;
+        _appender = appender;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var siteUpdater = new SiteUpdater(_siteParserConfiguration);
+        var siteUpdater = new SiteUpdater(_siteParserConfiguration, _appender);
         jobContainer.AddJob(siteUpdater, TimeSpan.FromMinutes(10));
         var jobs = new IJob[]
         {

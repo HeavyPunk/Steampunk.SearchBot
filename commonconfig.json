@@ -1,0 +1,13 @@
+{
+	"nodes":
+	[
+		{
+			"href": "https://urfu.ru/en/prospective-students/faq/",
+			"mainBlockSelector": ".col3 .article"
+		},
+		{
+			"href": "https://urfu.ru/ru/feedback/priem/top/",
+			"mainBlockSelector": "#c112187"
+		}	
+	]
+}

@@ -1,4 +1,5 @@
 using SearchBot.Configuration.Args;
+using SearchBot.Lib.Appenders;
 using SearchBot.Lib.Config;
 using SearchBot.Lib.Logging;
 using SearchBot.Lib.Scanners.SiteScanner;
@@ -20,10 +21,12 @@ public class SiteUpdater : IJob
     private CancellationTokenSource cts = new();
     private SiteScanner siteScanner = new();
     private SiteParserConfiguration _siteParserConfiguration;
+    private IAppender _appender;
 
-    public SiteUpdater(SiteParserConfiguration siteParserConfiguration)
+    public SiteUpdater(SiteParserConfiguration siteParserConfiguration, IAppender appender)
     {
         _siteParserConfiguration = siteParserConfiguration;
+        _appender = appender;
     }
 
     private async Task Work(ArgsContainer<ConfigFile> urlsContainer, ILog log)
@@ -41,10 +44,9 @@ public class SiteUpdater : IJob
         log.Info($"Scanning for {node.Href}, scan id = {id}");
         var res = siteScanner.Scan(node, null);
 
-        foreach (var pair in res)
-        {
-            log.Info($"{pair.Key} - {pair.Value}");
-        }
+        foreach (var (question, answer) in res)
+            _appender.Add(question, answer);
+        
         
         log.Info($"Scanning {id} is stopped");
         return true;
