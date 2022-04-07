@@ -44,10 +44,17 @@ public class SiteUpdater : IJob
         log.Info($"Scanning for {node.Href}, scan id = {id}");
         var res = siteScanner.Scan(node, null);
 
-        foreach (var (question, answer) in res)
-            _appender.Add(question, answer);
-        
-        
+        try
+        {
+            foreach (var (question, answer) in res)
+                _appender.Add(question, answer);
+        }
+        catch (Exception e)
+        {
+            log.Error(e.ToString());
+        }
+
+
         log.Info($"Scanning {id} is stopped");
         return true;
     }

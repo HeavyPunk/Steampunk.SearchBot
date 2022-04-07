@@ -2,6 +2,7 @@ using SearchBot.Configuration;
 using SearchBot.Configuration.Args;
 using SearchBot.Configuration.Settings;
 using SearchBot.Lib.Appenders;
+using SearchBot.Lib.Appenders.Database;
 using SearchBot.Lib.Appenders.Logging;
 using SearchBot.Lib.Logging;
 using SearchBot.Worker;
@@ -16,7 +17,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IAppConfigurator, Configurator>();
         services.AddSingleton<SiteParserConfiguration>();
         services.AddSingleton<ConfiguratorSettings>();
-        services.AddSingleton<IAppender, LogAppender>();
+        services.AddSingleton<IAppender, DatabaseAppender>();
     })
     .Build();
 
