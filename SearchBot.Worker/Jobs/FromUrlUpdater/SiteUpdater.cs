@@ -1,6 +1,7 @@
 using SearchBot.Configuration.Args;
 using SearchBot.Lib.Appenders;
 using SearchBot.Lib.Config;
+using SearchBot.Lib.DataMiddleware;
 using SearchBot.Lib.Logging;
 using SearchBot.Lib.Scanners.SiteScanner;
 using SearchBot.Lib.Threading;
@@ -22,6 +23,12 @@ public class SiteUpdater : IJob
     private SiteScanner siteScanner = new();
     private SiteParserConfiguration _siteParserConfiguration;
     private IAppender _appender;
+
+    private IList<IDataMiddleware<string, string>> middlewares = new List<IDataMiddleware<string, string>>
+    {
+        new StringErrorResolver(),
+        new StringNullResolver(),
+    };
 
     public SiteUpdater(SiteParserConfiguration siteParserConfiguration, IAppender appender)
     {
@@ -47,7 +54,11 @@ public class SiteUpdater : IJob
         try
         {
             foreach (var (question, answer) in res)
-                _appender.Add(question, answer);
+            {
+                var resQuestion = GoToMiddleware(question);
+                var resAnswer = GoToMiddleware(answer);
+                _appender.Add(resQuestion, resAnswer);
+            }
         }
         catch (Exception e)
         {
@@ -57,6 +68,14 @@ public class SiteUpdater : IJob
 
         log.Info($"Scanning {id} is stopped");
         return true;
+    }
+
+    private string GoToMiddleware(string input)
+    {
+        var res = input;
+        foreach (var middleware in middlewares)
+            res = middleware.Convert(res);
+        return res;
     }
     
     public async Task<bool> Run(ILog log)

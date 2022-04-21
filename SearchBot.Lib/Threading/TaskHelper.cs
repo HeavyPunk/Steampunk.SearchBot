@@ -15,7 +15,7 @@ public class TaskHelper
         }
         catch (Exception e)
         {
-            log.Warn(task.Exception?.Message ?? e.Message);
+            log.Warn(e.Message);
         }
 
         return res;

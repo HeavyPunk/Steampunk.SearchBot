@@ -8,6 +8,14 @@
 		{
 			"href": "https://urfu.ru/ru/feedback/priem/top/",
 			"mainBlockSelector": "#c112187"
-		}	
+		},
+		{
+			"href": "https://urfu.ru/en/international/programs-and-courses/postgraduate-programs-in-english/general-inquiries-faq/",
+			"mainBlockSelector": ".col3 .article"
+		},
+		{
+			"href": "https://shua.urfu.ru/ru/chasto-zadavaemye-voprosy/",
+			"mainBlockSelector": ".col3 .article"
+		}
 	]
 }
