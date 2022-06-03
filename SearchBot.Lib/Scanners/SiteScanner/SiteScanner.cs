@@ -9,7 +9,8 @@ namespace SearchBot.Lib.Scanners.SiteScanner;
 
 public class SiteScanner : IScanner<Node, Dictionary<string, string>>
 {
-    private Regex sentenceRegex = new("[A-Za-zА-ЯА-яёЁ0-9 .,/\\*@?><&%$#! }{'\"-_—();:`~№^]+", RegexOptions.Compiled);
+    private readonly Regex sentenceRegex = new("[A-Za-zА-ЯА-яёЁ0-9 .,/\\*@?><&%$#! }{'\"-_—();:`~№^’]+", RegexOptions.Compiled);
+    private readonly Regex questionRegex = new("[A-Za-zА-ЯА-яёЁ0-9 .,/\\*@?><&%$#! }{'\"-_—();:`~№^’]+[?]{1}", RegexOptions.Compiled);
     public Dictionary<string, string> Scan(Node source, ArgsContainer<Node> toFind)
     {
         var titles = GetTitles(source);
@@ -22,7 +23,6 @@ public class SiteScanner : IScanner<Node, Dictionary<string, string>>
     {
         if (siteContent is null)
             return new Dictionary<string, string>();
-        var questionRegex = new Regex("[A-Za-zА-ЯА-яёЁ0-9 .,/\\*@?><&%$#! }{'\"-_—();:`~№^]+[?]{1}", RegexOptions.Compiled);
         var res = new Dictionary<string, string>();
         string curQuestion = null;
         var answContainer = new List<string>();
@@ -88,7 +88,7 @@ public class SiteScanner : IScanner<Node, Dictionary<string, string>>
             {
                 if (!toAdd.Contains(hrefText))
                     continue;
-                toAdd = toAdd.Replace(hrefText, href);
+                toAdd = toAdd.Replace(hrefText, $"{hrefText} ({href})");
                 hrefs.Remove(hrefText);
                 break;
             }
