@@ -1,5 +1,6 @@
 using System.Text.Json;
 using SearchBot.Lib.Config;
+using SearchBot.Lib.DataMiddleware;
 using SearchBot.Worker.Jobs;
 
 namespace SearchBot.Configuration.Args;
@@ -7,6 +8,7 @@ namespace SearchBot.Configuration.Args;
 public class SiteParserConfiguration
 {
     private readonly IAppConfigurator _configurator;
+    private readonly IDataMiddleware<string, string> _filePathResolver = new FilePathReplacerMiddleware();
     private ConfigFile _file;
     
     public SiteParserConfiguration(IAppConfigurator configurator)
@@ -31,7 +33,7 @@ public class SiteParserConfiguration
     public async Task<ArgsContainer<ConfigFile>> GetArgs()
     {
         var appSettings = await _configurator.GetConfig();
-        var config = await ParseFile(appSettings.ResourceFilePath);
+        var config = await ParseFile(_filePathResolver.Convert(appSettings.ResourceFilePath));
         var result = new ArgsContainer<ConfigFile>
         {
             Arguments = new List<Argument<ConfigFile>>{new(){Value = config}}

@@ -3,5 +3,5 @@
     "ConnectionString" : "",
     "DbType": "SqLite"
   },
-  "ResourceFilePath" : "/home/blackpoint/RiderProjects/Steampunk.SearchBot/commonconfig.json"
+  "ResourceFilePath" : "{WorkingDirectory}/commonconfig.json"
 }
