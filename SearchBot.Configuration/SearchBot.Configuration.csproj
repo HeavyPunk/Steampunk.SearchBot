@@ -14,4 +14,8 @@
       <ProjectReference Include="..\SearchBot.Lib\SearchBot.Lib.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="config.json" />
+    </ItemGroup>
+
 </Project>

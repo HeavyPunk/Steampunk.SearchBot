@@ -7,15 +7,10 @@ namespace SearchBot.Lib.Appenders.Database;
 public class DatabaseAppender : IAppender
 {
     private readonly IComparer<string> stringComparer = new SimpleStringComparator();
-    private readonly FAQContext faqContext;
-    
-    public DatabaseAppender(FAQContext context)
-    {
-        this.faqContext = context;
-    }
-    
+
     public async Task Add(params string[] fields)
     {
+        await using var faqContext = new FAQContext();
         var faq = new FAQPair
         {
             Question = fields[0],
